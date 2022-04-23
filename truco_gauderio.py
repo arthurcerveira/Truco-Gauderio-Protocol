@@ -52,15 +52,15 @@ class Baralho(object):
 
 def dar_as_cartas(baralho):
     # 3 cartas para cada jogador
-    jogador_1 = list()
-    jogador_2 = list()
+    jogador_1 = dict()
+    jogador_2 = dict()
 
-    for _ in range(3):
+    for indice in range(1, 4):
         carta = baralho.tirar_carta()
-        jogador_1.append(carta)
+        jogador_1[indice] = carta
 
         carta = baralho.tirar_carta()
-        jogador_2.append(carta)
+        jogador_2[indice] = carta
 
     return jogador_1, jogador_2
 
