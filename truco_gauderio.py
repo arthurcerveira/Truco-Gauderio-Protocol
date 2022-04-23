@@ -1,3 +1,4 @@
+from ast import If
 from itertools import product
 from random import shuffle
 
@@ -15,11 +16,34 @@ REPRESENTACAO = {
     12: 'Rei'
 }
 
+# Força das manilhas do jogo
+MANILHAS = {
+    "Ás de espadas": 14,
+    "Ás de bastos": 13,
+    "7 de espadas": 12,
+    "7 de ouros": 11,
+}
+
+# Rankign de força das cartas
+RANKING = {
+    4: 1,
+    5: 2,
+    6: 3,
+    7: 4,
+    10: 5,
+    11: 6,
+    12: 7,
+    1: 8,
+    2: 9,
+    3: 10,
+}
+
 
 class Carta(object):
     def __init__(self,  naipe, numero):
         self.naipe = naipe
         self.numero = numero
+        self.forca = self.forca_da_carta()
 
     def __str__(self):
         representacao = REPRESENTACAO.get(self.numero)
@@ -27,6 +51,18 @@ class Carta(object):
             representacao = self.numero
 
         return f"{representacao} de {self.naipe}"
+
+    def forca_da_carta(self):
+        # Verifica se é manilha
+        representacao = self.__str__()
+
+        if representacao in MANILHAS:
+            return MANILHAS[representacao]
+
+        return RANKING[self.numero]
+
+    def __gt__(self, outro):
+        return self.forca > outro.forca
 
 
 class Baralho(object):
