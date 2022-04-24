@@ -1,7 +1,6 @@
 from .baralho import Baralho, dar_as_cartas
 
-J1 = 1
-J2 = 2
+MAXIMO_PONTOS = 2
 
 
 class Truco(object):
@@ -145,11 +144,27 @@ class Truco(object):
         return resposta
 
     def proxima_rodada(self, resposta):
-        self.inicializa_rodada()
+        ganhador = self.ganhou_jogo()
 
-        resposta = self.proxima_jogada(resposta, self.mao)
+        if ganhador is not None:
+            resposta = "FJ\n" + resposta
+            fim_de_jogo = f"Fim de jogo\n{ganhador} venceu\n"
+            print(fim_de_jogo)
+            resposta += fim_de_jogo
+        else:
+            self.inicializa_rodada()
+            resposta = self.proxima_jogada(resposta, self.mao)
 
         return resposta
+
+    def ganhou_jogo(self):
+        if self.placar["Servidor"] >= MAXIMO_PONTOS:
+            return "Servidor"
+
+        if self.placar["Cliente"] >= MAXIMO_PONTOS:
+            return "Cliente"
+
+        return None
 
 
 def mostrar_cartas(cartas):

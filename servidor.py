@@ -1,7 +1,6 @@
 from socket import *
 
-from truco.truco_gauderio import Truco, Jogador, mostrar_cartas
-from truco.baralho import Baralho, dar_as_cartas
+from truco.truco_gauderio import Truco, mostrar_cartas
 
 
 port = 6050
@@ -22,15 +21,15 @@ while True:
     conexao, endereco = servidor.accept()
 
     while True:
-        data = conexao.recv(1024)
+        dados = conexao.recv(1024)
 
-        if not data:
+        if not dados:
             # print("Not data")
             break
 
-        mensagem = data.decode("utf-8")
+        mensagem = dados.decode("utf-8")
 
-        print("Cliente: ", mensagem)
+        # print("Cliente: ", mensagem)
 
         # Primeira palavra antes do espaço representa a tipo de mensagem
         tipo_mensagem, *conteudo = mensagem.split('\n')

@@ -1,7 +1,8 @@
 from socket import *
 
 
-host = '172.17.0.2'
+# host = '172.17.0.2'
+host = '127.0.1.1'
 port = 6050
 
 print("Digite IJ para inciar o jogo de Truco Gaudério:")
@@ -42,6 +43,12 @@ while True:
 
         # Cliente escolhe carta na próxima iteração
 
+    # Fim de jogo
+    elif tipo_mensagem == "FJ":
+        print(conteudo)
+
+        # Finaliza execução
+        break
     else:
         print("Tipo de mensagem desconhecido")
         print(conteudo)
