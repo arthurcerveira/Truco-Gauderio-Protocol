@@ -23,13 +23,14 @@ while True:
     resposta = cliente.recv(1024)
     resposta = resposta.decode('utf-8')
 
-    print("Servidor: ", resposta)
+    # print("Servidor: ", resposta)
 
     # Primeira palavra antes do espaço representa a chave
     chave, *conteudo = resposta.split('\n')
     # Remonta conteúdo para imprimir na tela
     conteudo = "\n".join(conteudo)
 
+    # Servidor jogou a primeira carta
     if chave == "JS1":
         print(conteudo)
 
@@ -37,5 +38,17 @@ while True:
         mensagem = "JC1\n"
 
         # Cliente escolhe carta na próxima iteração
+
+    # Cliente jogou a primeira carta
+    elif chave == "JS2":
+        print(conteudo)
+
+        # Resposta do cliente inicia com chave JC2
+        mensagem = "JC2\n"
+
+        # Cliente escolhe carta na próxima iteração
+    else:
+        print("Chave desconhecida")
+        print(conteudo)
 
     cliente.close()

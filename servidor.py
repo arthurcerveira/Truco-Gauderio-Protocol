@@ -78,12 +78,12 @@ while True:
 
             # Estado (carta na mesa, pontuacao da rodada, aguardando jogada)
 
+        # Servidor começou o turno e aguarda resposta do cliente
         elif chave == "JC1":
-            # Servidor começou o turno e aguarda resposta do cliente
-            print(f"Cliente escolheu a carta {conteudo}")
-
             # Recebe carta do cliente após ter jogado carta
             carta2 = truco.cliente.cartas[int(conteudo)]
+
+            print(f"Cliente jogou a carta {carta2}")
 
             # Remove carta do cliente da mão do cliente
             truco.cliente.cartas[int(conteudo)] = ""
@@ -91,27 +91,8 @@ while True:
             # Compara com carta na mesa
             carta1 = truco.cartas_na_mesa[truco.servidor]
 
-            # Verifica qual carta é maior
-            if carta1 > carta2:
-                resposta = f"{carta1} é maior que {carta2}\n"
-
-                # Atualiza pontuação da rodada
-                truco.pontuacao_rodada[truco.servidor] += 1
-
-                proximo_jogador = truco.servidor.nome
-
-            elif carta2 > carta1:
-                resposta = f"{carta2} é maior que {carta1}\n"
-
-                # Atualiza pontuação da rodada
-                truco.pontuacao_rodada[truco.cliente] += 1
-
-                proximo_jogador = truco.cliente.nome
-
-            else:
-                reposta = "As duas cartas tem o mesmo valor\n"
-
-                proximo_jogador = truco.servidor.nome
+            # Define maior carta e atualiza pontuação da rodada
+            resposta, proximo_jogador = truco.maior_carta(carta1, carta2)
 
             resposta += f"Pontuação da rodada:\n" + \
                         f"Servidor = {truco.pontuacao_rodada[truco.servidor]}\n" + \
@@ -119,58 +100,51 @@ while True:
 
             print(resposta)
 
-            # Verifica se rodada acabou (pontuação ou número de cartas)
-            pontos = truco.pontuacao_rodada.values()
-            if 2 in pontos:
-                if truco.pontuacao_rodada[truco.servidor] == 2:
-                    ganhador = truco.servidor.nome
-                else:
-                    ganhador = truco.servidor.nome
+            # Verifica se rodada acabou
+            fim_rodada = truco.fim_rodada(resposta)
 
-                ganhador_rodada = f"Fim da rodada. Ponto para {ganhador}"
-                print(ganhador_rodada)
-                resposta += ganhador_rodada
+            if fim_rodada:
+                resposta += fim_rodada
 
-                # Se rodada acabou, verifica próximo jogador
-                pass
-            else:
-                if proximo_jogador == truco.servidor.nome:
-                    # Servido joga a próxima carta
-                    # Escolhe carta
-                    carta = truco.servidor.escolhe_carta()
-                    truco.cartas_na_mesa[truco.servidor] = carta
-
-                    # Resposta do cliente inicia com chave JS1
-                    resposta = "JS1\n" + resposta
-
-                    # Envia carta na mesa
-                    resposta += f"Servidor jogou a carta {carta}\n"
-
-                    # Envia para cliente suas cartas
-                    resposta += mostrar_cartas(cartas_cliente)
-                    resposta += "Escolha sua carta:"
-
-                else:
-                    # Cliente joga a próxima carta
-                    pass
-                # Senão continuar rodada
-                # Jogador que ganhou o turno joga novamente
-
-        elif chave == "JC2":
-            print(conteudo)
-
-            resposta = "Resposta JC2"
-
-            # Cliente começou o turno e aguarda resposta do servidor
-            # Escolhe carta
-            # Verifica qual carta é maior
-            # Atualiza pontuação da rodada
-            # Verifica se rodada acabou (pontuação ou número de cartas)
-            # Se rodada acabou, verifica próximo jogador
             # Senão continuar rodada
-            # Jogador que ganhou o turno joga novamente
-            pass
+            else:
+                # Jogador que ganhou o turno joga novamente
+                resposta += truco.proxima_jogada(resposta, proximo_jogador)
 
+        # Cliente começou o turno e aguarda resposta do servidor
+        elif chave == "JC2":
+            # Recebe carta do cliente após ter jogado carta
+            carta2 = truco.cliente.cartas[int(conteudo)]
+            print(f"Cliente jogou a carta {carta2}")
+
+            # Remove carta do cliente da mão do cliente
+            truco.cliente.cartas[int(conteudo)] = ""
+
+            # Escolhe carta
+            carta1 = truco.servidor.escolhe_carta()
+
+            # Verifica qual carta é maior
+            carta1 = truco.cartas_na_mesa[truco.servidor]
+
+            resposta, proximo_jogador = truco.maior_carta(carta1, carta2)
+
+            resposta += f"Pontuação da rodada:\n" + \
+                        f"Servidor = {truco.pontuacao_rodada[truco.servidor]}\n" + \
+                        f"Cliente  = {truco.pontuacao_rodada[truco.cliente]}\n"
+
+            # Verifica se rodada acabou
+            fim_rodada = truco.fim_rodada(resposta)
+
+            if fim_rodada is not None:
+                resposta += fim_rodada
+
+            # Senão continuar rodada
+            else:
+                # Jogador que ganhou o turno joga novamente
+                resposta += truco.proxima_jogada(resposta, proximo_jogador)
+        else:
+            print("Chave desconhecida")
+            print(conteudo)
         conexao.sendall(bytes(resposta, encoding="utf-8"))
 
     conexao.close()
