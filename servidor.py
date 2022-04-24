@@ -47,25 +47,8 @@ while True:
                 "Cliente": 0,
             }
 
-            # Cria baralho
-            baralho = Baralho()
-            baralho.embaralhar()
-
-            # Dá as cartas
-            cartas_servidor, cartas_cliente = dar_as_cartas(baralho)
-
-            # Cria jogadores
-            truco.servidor = Jogador(cartas_servidor, "Servidor")
-            truco.cliente = Jogador(cartas_cliente, "Cliente")
-
-            # Define o mão da rodada
-            truco.mao = truco.servidor.nome
-
-            # Inicializa pontuação da rodada
-            truco.pontuacao_rodada = {
-                truco.servidor.nome: 0,
-                truco.cliente.nome: 0
-            }
+            # Inicializa baralho, e dá cartas aos jogadores
+            truco.inicializa_rodada("Servidor")
 
             # Escolhe carta
             carta = truco.servidor.escolhe_carta()
@@ -78,7 +61,7 @@ while True:
             resposta += f"Servidor jogou a carta {carta}\n"
 
             # Envia para cliente suas cartas
-            resposta += mostrar_cartas(cartas_cliente)
+            resposta += mostrar_cartas(truco.cliente.cartas)
             resposta += "Escolha sua carta:"
 
             # Estado (carta na mesa, pontuacao da rodada, aguardando jogada)
@@ -113,6 +96,16 @@ while True:
             if fim_rodada:
                 resposta = fim_rodada
 
+                placar = "Placar do jogo:\n" + \
+                    f"Servidor = {truco.placar[truco.servidor.nome]}\n" + \
+                    f"Cliente  = {truco.placar[truco.cliente.nome]}\n" + \
+                    "Começando nova rodada\n"
+
+                resposta += placar
+                print(placar)
+
+                resposta = truco.proxima_rodada(resposta)
+
             # Senão continuar rodada
             else:
                 # Jogador que ganhou o turno joga novamente
@@ -144,8 +137,18 @@ while True:
             # Verifica se rodada acabou
             fim_rodada = truco.fim_rodada(resposta)
 
-            if fim_rodada is not None:
+            if fim_rodada:
                 resposta = fim_rodada
+
+                placar = "Placar do jogo:\n" + \
+                    f"Servidor = {truco.placar[truco.servidor.nome]}\n" + \
+                    f"Cliente  = {truco.placar[truco.cliente.nome]}\n" + \
+                    "Começando nova rodada\n"
+
+                resposta += placar
+                print(placar)
+
+                resposta = truco.proxima_rodada(resposta)
 
             # Senão continuar rodada
             else:

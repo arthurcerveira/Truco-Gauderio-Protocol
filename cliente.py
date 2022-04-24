@@ -41,6 +41,7 @@ while True:
         mensagem = "JC2\n"
 
         # Cliente escolhe carta na próxima iteração
+
     else:
         print("Tipo de mensagem desconhecido")
         print(conteudo)

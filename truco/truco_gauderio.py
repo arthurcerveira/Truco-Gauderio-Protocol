@@ -1,3 +1,5 @@
+from .baralho import Baralho, dar_as_cartas
+
 J1 = 1
 J2 = 2
 
@@ -17,6 +19,31 @@ class Truco(object):
         # Outros atributos tem servidor e cliente como chave para valores
         self.pontuacao_rodada = dict()
         self.cartas_na_mesa = dict()
+
+    def inicializa_rodada(self, mao=None):
+        # Cria baralho
+        baralho = Baralho()
+        baralho.embaralhar()
+
+        # Dá as cartas
+        cartas_servidor, cartas_cliente = dar_as_cartas(baralho)
+
+        # Cria jogadores
+        self.servidor = Jogador(cartas_servidor, "Servidor")
+        self.cliente = Jogador(cartas_cliente, "Cliente")
+
+        # Define o mão da rodada
+        if mao is not None:
+            self.mao = mao
+        else:
+            # Mão é sempre o inverso do jogador atual
+            self.mao = "Cliente" if self.mao == "Servidor" else "Servidor"
+
+        # Inicializa pontuação da rodada
+        self.pontuacao_rodada = {
+            self.servidor.nome: 0,
+            self.cliente.nome: 0
+        }
 
     def cartas_disponiveis(self):
         cartas_disponiveis = self.servidor.cartas_disponiveis
@@ -67,16 +94,14 @@ class Truco(object):
     def fim_rodada(self, resposta):
         ganhador = self.ganhou_rodada()
 
-        print()
-
         if ganhador is not None:
             # Atualiza placar com ganhador
             ganhador_rodada = f"Fim da rodada. Ponto para {ganhador}"
             print(ganhador_rodada)
             resposta += ganhador_rodada
 
-            # Verifica próximo jogador
-            pass
+            self.placar[ganhador] += 1
+
         # Verifica se rodada acabou (número de cartas)
         elif self.cartas_disponiveis() is False:
             # Se nº de cartas = 0 e pontuação < 2, vitória da mão
@@ -87,8 +112,9 @@ class Truco(object):
             print(ganhador_rodada)
             resposta += ganhador_rodada
 
-            # Verifica próximo jogador
-            pass
+            # Atualiza placar com ganhador
+            self.placar[ganhador] += 1
+
         else:
             # Rodada não acabou
             return False
@@ -115,6 +141,13 @@ class Truco(object):
         # Envia para cliente suas cartas
         resposta += mostrar_cartas(self.cliente.cartas)
         resposta += "Escolha sua carta:"
+
+        return resposta
+
+    def proxima_rodada(self, resposta):
+        self.inicializa_rodada()
+
+        resposta = self.proxima_jogada(resposta, self.mao)
 
         return resposta
 
