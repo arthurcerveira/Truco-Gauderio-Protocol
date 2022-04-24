@@ -19,20 +19,20 @@ class Truco(object):
         self.cartas_na_mesa = dict()
 
     def cartas_disponiveis(self):
-        if self.servidor.cartas_disponiveis > 0:
-            return True
-        if self.cliente.cartas_disponiveis > 0:
-            return True
+        cartas_disponiveis = self.servidor.cartas_disponiveis
+        cartas_disponiveis += self.cliente.cartas_disponiveis
 
-        return False
+        # print(f"Cartas disponíveis: {cartas_disponiveis}")
 
-    def maior_carta(self, carta1, carta2):
+        return True if cartas_disponiveis > 0 else False
+
+    def maior_carta(self, carta1, carta2, jogador):
         # Verifica qual carta é maior
         if carta1 > carta2:
             resposta = f"{carta1} é maior que {carta2}\n"
 
             # Atualiza pontuação da rodada
-            self.pontuacao_rodada[self.servidor] += 1
+            self.pontuacao_rodada[self.servidor.nome] += 1
 
             proximo_jogador = self.servidor.nome
 
@@ -40,14 +40,14 @@ class Truco(object):
             resposta = f"{carta2} é maior que {carta1}\n"
 
             # Atualiza pontuação da rodada
-            self.pontuacao_rodada[self.cliente] += 1
+            self.pontuacao_rodada[self.cliente.nome] += 1
 
             proximo_jogador = self.cliente.nome
 
         else:
             resposta = "As duas cartas tem o mesmo valor\n"
 
-            proximo_jogador = self.servidor.nome
+            proximo_jogador = jogador
 
         return resposta, proximo_jogador
 
@@ -55,7 +55,7 @@ class Truco(object):
         pontos = self.pontuacao_rodada.values()
 
         if 2 in pontos:
-            if self.pontuacao_rodada[self.servidor] == 2:
+            if self.pontuacao_rodada[self.servidor.nome] == 2:
                 ganhador = self.servidor.nome
             else:
                 ganhador = self.cliente.nome
@@ -65,9 +65,11 @@ class Truco(object):
         return None
 
     def fim_rodada(self, resposta):
-        if self.ganhou_rodada() is not None:
-            ganhador = self.ganhou_rodada()
+        ganhador = self.ganhou_rodada()
 
+        print()
+
+        if ganhador is not None:
             # Atualiza placar com ganhador
             ganhador_rodada = f"Fim da rodada. Ponto para {ganhador}"
             print(ganhador_rodada)
@@ -78,7 +80,7 @@ class Truco(object):
         # Verifica se rodada acabou (número de cartas)
         elif self.cartas_disponiveis() is False:
             # Se nº de cartas = 0 e pontuação < 2, vitória da mão
-            ganhador = self.mao.nome
+            ganhador = self.mao
 
             ganhador_rodada = f"Empate. Ponto para {ganhador}"
 
@@ -98,7 +100,7 @@ class Truco(object):
         if proximo_jogador == self.servidor.nome:
             # Escolhe carta
             carta = self.servidor.escolhe_carta()
-            self.cartas_na_mesa[self.servidor] = carta
+            self.cartas_na_mesa[self.servidor.nome] = carta
 
             # Resposta do cliente inicia com chave JS1
             resposta = "JS1\n" + resposta

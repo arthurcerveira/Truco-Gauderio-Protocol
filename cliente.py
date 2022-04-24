@@ -1,5 +1,4 @@
 from socket import *
-import time
 
 
 host = '172.17.0.2'
@@ -9,11 +8,8 @@ print("Digite IJ para inciar o jogo de Truco Gaudério:")
 mensagem = str()
 
 while True:
-    # time.sleep(0.5)
-
     cliente = socket(AF_INET, SOCK_STREAM)
 
-    # entrada = input("Cliente: ")
     entrada = input("")
     mensagem += entrada
 
@@ -23,32 +19,30 @@ while True:
     resposta = cliente.recv(1024)
     resposta = resposta.decode('utf-8')
 
-    # print("Servidor: ", resposta)
-
-    # Primeira palavra antes do espaço representa a chave
-    chave, *conteudo = resposta.split('\n')
+    # Primeira palavra antes do espaço representa a tipo de mensagem
+    tipo_mensagem, *conteudo = resposta.split('\n')
     # Remonta conteúdo para imprimir na tela
     conteudo = "\n".join(conteudo)
 
     # Servidor jogou a primeira carta
-    if chave == "JS1":
+    if tipo_mensagem == "JS1":
         print(conteudo)
 
-        # Resposta do cliente inicia com chave JC1
+        # Resposta do cliente inicia com tipo JC1
         mensagem = "JC1\n"
 
         # Cliente escolhe carta na próxima iteração
 
     # Cliente jogou a primeira carta
-    elif chave == "JS2":
+    elif tipo_mensagem == "JS2":
         print(conteudo)
 
-        # Resposta do cliente inicia com chave JC2
+        # Resposta do cliente inicia com tipo JC2
         mensagem = "JC2\n"
 
         # Cliente escolhe carta na próxima iteração
     else:
-        print("Chave desconhecida")
+        print("Tipo de mensagem desconhecido")
         print(conteudo)
 
     cliente.close()
