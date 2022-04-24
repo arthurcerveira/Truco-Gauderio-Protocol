@@ -10,6 +10,17 @@ PROXIMO_JOGADOR = {
 }
 
 
+def mostrar_cartas(cartas):
+    cartas_texto = str()
+
+    for indice in cartas:
+        carta = cartas[indice]
+
+        cartas_texto += f"{indice} - {carta}\n"
+
+    return cartas_texto
+
+
 class Jogador(object):
     def __init__(self, cartas):
         self.cartas = cartas
@@ -20,18 +31,8 @@ class Jogador(object):
                   if self.cartas[indice] != ""}
         return len(opcoes)
 
-    def mostrar_cartas(self):
-        cartas = str()
-
-        for indice in self.cartas:
-            carta = self.cartas[indice]
-
-            cartas += f"{indice} - {carta}\n"
-
-        return cartas
-
     def escolhe_carta(self):
-        cartas = self.mostrar_cartas()
+        cartas = mostrar_cartas(self.cartas)
         print(cartas)
 
         # Obtem opções de cartas
@@ -50,7 +51,7 @@ class Jogador(object):
         return carta
 
 
-class Truco(object):
+class Truco2(object):
     def __init__(self):
         self.baralho = Baralho()
         self.jogadores = self.inicia_jogadores()
@@ -117,7 +118,7 @@ class Truco(object):
 
 if __name__ == '__main__':
     # Inicializa o baralho
-    truco = Truco()
+    truco = Truco2()
     truco.inicia_jogadores()
 
     truco.rodada()

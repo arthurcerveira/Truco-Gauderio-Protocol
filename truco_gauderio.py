@@ -1,4 +1,3 @@
-from ast import If
 from itertools import product
 from random import shuffle
 
