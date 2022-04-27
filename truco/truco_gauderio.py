@@ -1,6 +1,6 @@
 from .baralho import Baralho, dar_as_cartas
 
-MAXIMO_PONTOS = 2
+MAXIMO_PONTOS = 3
 
 
 class Truco(object):
@@ -15,11 +15,20 @@ class Truco(object):
         # Mão é o jogador que começou a rodada
         self.mao = None
 
+        # Número de pontos será alterado quando jogador pede Truco
+        self.pontos_rodada = int()
+
         # Outros atributos tem servidor e cliente como chave para valores
         self.pontuacao_rodada = dict()
         self.cartas_na_mesa = dict()
 
+        # Metadados
+        self.etapa_atual = str()
+
     def inicializa_rodada(self, mao=None):
+        # Pontos da rodada é 1 por padrão
+        self.pontos_rodada = 1
+
         # Cria baralho
         baralho = Baralho()
         baralho.embaralhar()
@@ -95,24 +104,24 @@ class Truco(object):
 
         if ganhador is not None:
             # Atualiza placar com ganhador
-            ganhador_rodada = f"Fim da rodada. Ponto para {ganhador}"
+            ganhador_rodada = f"Fim da rodada. Ponto para {ganhador}\n"
             print(ganhador_rodada)
             resposta += ganhador_rodada
 
-            self.placar[ganhador] += 1
+            self.placar[ganhador] += self.pontos_rodada
 
         # Verifica se rodada acabou (número de cartas)
         elif self.cartas_disponiveis() is False:
             # Se nº de cartas = 0 e pontuação < 2, vitória da mão
             ganhador = self.mao
 
-            ganhador_rodada = f"Empate. Ponto para {ganhador}"
+            ganhador_rodada = f"Empate. Ponto para {ganhador}\n"
 
             print(ganhador_rodada)
             resposta += ganhador_rodada
 
             # Atualiza placar com ganhador
-            self.placar[ganhador] += 1
+            self.placar[ganhador] += self.pontos_rodada
 
         else:
             # Rodada não acabou
@@ -128,14 +137,14 @@ class Truco(object):
             self.cartas_na_mesa[self.servidor.nome] = carta
 
             # Resposta do cliente inicia com chave JS1
-            resposta = "JS1\n" + resposta
+            resposta = "JS1|" + resposta
 
             # Envia carta na mesa
             resposta += f"Servidor jogou a carta {carta}\n"
 
         # Cliente joga a próxima carta
         else:
-            resposta = "JS2\n" + resposta
+            resposta = "JS2|" + resposta
 
         # Envia para cliente suas cartas
         resposta += mostrar_cartas(self.cliente.cartas)
@@ -147,11 +156,12 @@ class Truco(object):
         ganhador = self.ganhou_jogo()
 
         if ganhador is not None:
-            resposta = "FJ\n" + resposta
+            resposta = "FJ|" + resposta
             fim_de_jogo = f"Fim de jogo\n{ganhador} venceu\n"
             print(fim_de_jogo)
             resposta += fim_de_jogo
         else:
+            resposta += "Começando nova rodada\n"
             self.inicializa_rodada()
             resposta = self.proxima_jogada(resposta, self.mao)
 
@@ -198,6 +208,11 @@ class Jogador(object):
                   if self.cartas[indice] != ""}
 
         indice = int(input("Escolha uma carta: "))
+
+        # Jogador pede TRUCO antes de escolher a carta
+        # if indice == "TRUCO":
+        #     return "TRUCO"
+
         while indice not in opcoes:
             indice = int(input("Valor inválido. Escolha uma carta: "))
 
