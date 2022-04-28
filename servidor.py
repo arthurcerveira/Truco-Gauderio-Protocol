@@ -12,7 +12,17 @@ host = gethostbyname(nome_host)
 print(f"Host: {host}")
 
 truco = Truco()
-resposta = str()
+# Inicializa resposta como None
+resposta = "None"
+
+# Mensagens é um expedidor de mensagens pelo tipo
+mensagens = {
+    "IJ": IJ,
+    "JC1": JC1,
+    "JC2": JC2,
+    "TRUCO": TRUCO,
+    "RTRUCO": RTRUCO,
+}
 
 while True:
     servidor = socket(AF_INET, SOCK_STREAM)
@@ -33,27 +43,15 @@ while True:
         # Primeira palavra antes do espaço representa a tipo de mensagem
         tipo_mensagem, conteudo = mensagem.split('|')
 
-        if tipo_mensagem == "IJ":
-            resposta = IJ(truco, conteudo, tipo_mensagem, resposta)
+        funcao_mensagem = mensagens.get(tipo_mensagem)
 
-        # Servidor começou o turno e aguarda resposta do cliente
-        elif tipo_mensagem == "JC1":
-            resposta = JC1(truco, conteudo, tipo_mensagem, resposta)
-
-        # Cliente começou o turno e aguarda resposta do servidor
-        elif tipo_mensagem == "JC2":
-            resposta = JC2(truco, conteudo, tipo_mensagem, resposta)
-
-        # Cliente pede TRUCO
-        elif tipo_mensagem == "TRUCO":
-            resposta = TRUCO(truco, conteudo, tipo_mensagem, resposta)
-
-        # Resposta do Cliente quando servidor pede TRUCO
-        elif tipo_mensagem == "RTRUCO":
-            resposta = RTRUCO(truco, conteudo, tipo_mensagem, resposta)
-
+        if funcao_mensagem is not None:
+            resposta = funcao_mensagem(
+                truco, conteudo, tipo_mensagem, resposta)
+        # Chave não está em mensagens
         else:
-            print("Tipo de mensagem desconhecida")
+            resposta = "MD|Tipo de mensagem desconhecida"
+            print(resposta)
             print(conteudo)
 
         conexao.sendall(bytes(resposta, encoding="utf-8"))

@@ -134,6 +134,7 @@ class Truco(object):
         if proximo_jogador == self.servidor.nome:
             # Escolhe carta
             carta = self.servidor.escolhe_carta()
+
             self.cartas_na_mesa[self.servidor.nome] = carta
 
             # Resposta do cliente inicia com chave JS1
@@ -204,22 +205,25 @@ class Jogador(object):
         print(cartas)
 
         # Obtem opções de cartas
-        opcoes = {indice for indice in self.cartas
+        opcoes = {str(indice) for indice in self.cartas
                   if self.cartas[indice] != ""}
 
-        indice = int(input("Escolha uma carta: "))
+        indice = input("Escolha uma carta: ")
 
         # Jogador pede TRUCO antes de escolher a carta
-        # if indice == "TRUCO":
-        #     return "TRUCO"
+        if indice == "TRUCO":
+            return "TRUCO"
 
         while indice not in opcoes:
-            indice = int(input("Valor inválido. Escolha uma carta: "))
+            indice = input("Valor inválido. Escolha uma carta: ")
 
-        carta = self.cartas[indice]
+            if indice == "TRUCO":
+                return "TRUCO"
+
+        carta = self.cartas[int(indice)]
 
         # Remove opção de carta
-        self.cartas[indice] = ""
+        self.cartas[int(indice)] = ""
 
         return carta
 

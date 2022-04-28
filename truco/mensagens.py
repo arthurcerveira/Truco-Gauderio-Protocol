@@ -1,3 +1,4 @@
+from truco.baralho import Carta
 from .truco_gauderio import mostrar_cartas
 
 
@@ -18,6 +19,11 @@ def IJ(truco, conteudo, tipo_mensagem, resposta):
 
     # Escolhe carta
     carta = truco.servidor.escolhe_carta()
+
+    if carta == "TRUCO":
+        _, mensagem = resposta.split("|")
+        return f"TRUCO|{mensagem}"
+
     truco.cartas_na_mesa[truco.servidor.nome] = carta
 
     # Resposta do cliente inicia com chave JS1
@@ -76,7 +82,30 @@ def JC1(truco, conteudo, tipo_mensagem, resposta):
     # Senão continuar rodada
     else:
         # Jogador que ganhou o turno joga novamente
-        resposta = truco.proxima_jogada(resposta, proximo_jogador)
+        # Servido joga a próxima carta
+        if proximo_jogador == truco.servidor.nome:
+            # Escolhe carta
+            carta = truco.servidor.escolhe_carta()
+
+            if carta == "TRUCO":
+                _, mensagem = resposta.split("|")
+                return f"TRUCO|{mensagem}"
+
+            truco.cartas_na_mesa[truco.servidor.nome] = carta
+
+            # Resposta do cliente inicia com chave JS1
+            resposta = "JS1|" + resposta
+
+            # Envia carta na mesa
+            resposta += f"Servidor jogou a carta {carta}\n"
+
+        # Cliente joga a próxima carta
+        else:
+            resposta = "JS2|" + resposta
+
+        # Envia para cliente suas cartas
+        resposta += mostrar_cartas(truco.cliente.cartas)
+        resposta += "Escolha sua carta:"
 
     return resposta
 
@@ -84,15 +113,26 @@ def JC1(truco, conteudo, tipo_mensagem, resposta):
 def JC2(truco, conteudo, tipo_mensagem, resposta):
     truco.etapa_atual = "JC2"
 
-    # Recebe carta do cliente após ter jogado carta
-    carta2 = truco.cliente.cartas[int(conteudo)]
-    print(f"Cliente jogou a carta {carta2}")
+    if conteudo == "C2RTRUCO":
+        # Caso de borda para sistema de TRUCO do servidor
+        carta2 = truco.cartas_na_mesa[truco.cliente.nome]
+    else:
+        # Recebe carta do cliente após ter jogado carta
+        carta2 = truco.cliente.cartas[int(conteudo)]
 
-    # Remove carta do cliente da mão do cliente
-    truco.cliente.cartas[int(conteudo)] = ""
+        truco.cartas_na_mesa[truco.cliente.nome] = carta2
+
+        # Remove carta do cliente da mão do cliente
+        truco.cliente.cartas[int(conteudo)] = ""
+
+    print(f"Cliente jogou a carta {carta2}")
 
     # Escolhe carta
     carta1 = truco.servidor.escolhe_carta()
+
+    if carta1 == "TRUCO":
+        _, mensagem = resposta.split("|")
+        return f"TRUCO|{mensagem}"
 
     # Verifica qual carta é maior
     resposta, proximo_jogador = truco.maior_carta(carta1,
@@ -113,8 +153,7 @@ def JC2(truco, conteudo, tipo_mensagem, resposta):
 
         placar = "Placar do jogo:\n" + \
             f"Servidor = {truco.placar[truco.servidor.nome]}\n" + \
-            f"Cliente  = {truco.placar[truco.cliente.nome]}\n" + \
-            "Começando nova rodada\n"
+            f"Cliente  = {truco.placar[truco.cliente.nome]}\n"
 
         resposta += placar
         print(placar)
@@ -124,7 +163,30 @@ def JC2(truco, conteudo, tipo_mensagem, resposta):
     # Senão continuar rodada
     else:
         # Jogador que ganhou o turno joga novamente
-        resposta = truco.proxima_jogada(resposta, proximo_jogador)
+        # Servido joga a próxima carta
+        if proximo_jogador == truco.servidor.nome:
+            # Escolhe carta
+            carta = truco.servidor.escolhe_carta()
+
+            if carta == "TRUCO":
+                _, mensagem = resposta.split("|")
+                return f"TRUCO|{mensagem}"
+
+            truco.cartas_na_mesa[truco.servidor.nome] = carta
+
+            # Resposta do cliente inicia com chave JS1
+            resposta = "JS1|" + resposta
+
+            # Envia carta na mesa
+            resposta += f"Servidor jogou a carta {carta}\n"
+
+        # Cliente joga a próxima carta
+        else:
+            resposta = "JS2|" + resposta
+
+        # Envia para cliente suas cartas
+        resposta += mostrar_cartas(truco.cliente.cartas)
+        resposta += "Escolha sua carta:"
 
     return resposta
 
@@ -135,7 +197,6 @@ def TRUCO(truco, conteudo, tipo_mensagem, resposta):
     )
 
     tipo, mensagem = resposta.split("|")
-    print(resposta)
 
     if aceitar_truco == "1":
         truco.pontos_rodada = 2
@@ -154,8 +215,7 @@ def TRUCO(truco, conteudo, tipo_mensagem, resposta):
         # Vai para próxima rodada
         placar = "Placar do jogo:\n" + \
             f"Servidor = {truco.placar[truco.servidor.nome]}\n" + \
-            f"Cliente  = {truco.placar[truco.cliente.nome]}\n" + \
-            "Começando nova rodada\n"
+            f"Cliente  = {truco.placar[truco.cliente.nome]}\n"
 
         resposta += placar
         print(placar)
@@ -177,9 +237,23 @@ def RTRUCO(truco, conteudo, tipo_mensagem, resposta):
         print(truco_mensagem)
 
         if truco.etapa_atual == "JC1":
-            resposta = JC1(truco, conteudo, tipo_mensagem, resposta)
+            # Servidor escolhe carta
+            carta = truco.servidor.escolhe_carta()
+
+            truco.cartas_na_mesa[truco.servidor.nome] = carta
+
+            # Resposta do cliente inicia com chave JS1
+            resposta = "JS1|"
+
+            # Envia carta na mesa
+            resposta += f"Servidor jogou a carta {carta}\n"
+
+            # Envia para cliente suas cartas
+            resposta += mostrar_cartas(truco.cliente.cartas)
+            resposta += "Escolha sua carta:"
         elif truco.etapa_atual == "JC2":
-            resposta = JC2(truco, conteudo, tipo_mensagem, resposta)
+            # C2RTRUCO é um código para servidor pegar a carta certa
+            resposta = JC2(truco, "C2RTRUCO", tipo_mensagem, resposta)
 
         tipo, mensagem = resposta.split("|")
         resposta = f"{tipo}|{truco_mensagem}{mensagem}"

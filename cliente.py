@@ -1,8 +1,8 @@
 from socket import *
 
 
-host = '172.17.0.2'
-# host = '127.0.1.1'
+# host = '172.17.0.3'
+host = '127.0.1.1'
 port = 6050
 
 print("Digite IJ para inciar o jogo de Truco Gaudério:")
@@ -14,9 +14,11 @@ while True:
     entrada = input("")
     mensagem += entrada
 
-    if mensagem == "IJ":
+    # Adiciona corpo para mensagem se não tiver
+    if len(mensagem.split("|")) == 1:
         mensagem += "|None"
 
+    # Entrada TRUCO sobrescreve outras informações do corpo
     if entrada == "TRUCO":
         mensagem = "TRUCO|None"
 
@@ -26,7 +28,7 @@ while True:
     dados = cliente.recv(1024)
     resposta = dados.decode('utf-8')
 
-    # print("Servidor: " + resposta)
+    # print("Servidor: " + resposta + "\n")
 
     # Primeira palavra antes do espaço representa a tipo de mensagem
     tipo_mensagem, conteudo = resposta.split('|')
@@ -51,7 +53,7 @@ while True:
 
     # Cliente jogou a primeira carta
     elif tipo_mensagem == "TRUCO":
-        # print(conteudo)
+        print(conteudo)
 
         print("Servidor pediu TRUCO\n1 - Aceitar\n2 - Rejeitar\n")
 
@@ -67,8 +69,12 @@ while True:
         # Finaliza execução
         break
 
+    # Mensagem desconhecida
+    elif tipo_mensagem == "MD":
+        print(conteudo)
+
     else:
-        print("Tipo de mensagem desconhecido")
+        # print("Tipo de mensagem desconhecido")
         print(conteudo)
 
     cliente.close()
