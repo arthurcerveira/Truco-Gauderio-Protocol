@@ -1,8 +1,8 @@
 from socket import *
 
 
-# host = '172.17.0.3'
-host = '127.0.1.1'
+host = '172.17.0.3'
+# host = '127.0.1.1'
 port = 6050
 
 print("Digite IJ para inciar o jogo de Truco Gaudério:")

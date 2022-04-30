@@ -52,7 +52,7 @@ while True:
         else:
             resposta = "MD|Tipo de mensagem desconhecida"
             print("Tipo de mensagem desconhecida")
-            print(conteudo)
+            print(mensagem)
 
         conexao.sendall(bytes(resposta, encoding="utf-8"))
 

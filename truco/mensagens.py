@@ -86,6 +86,8 @@ def JC1(truco, conteudo, tipo_mensagem, resposta):
         # Jogador que ganhou o turno joga novamente
         # Servido joga a próxima carta
         if proximo_jogador == truco.servidor.nome:
+            truco.etapa_atual = "JC1"
+
             # Escolhe carta
             carta = truco.servidor.escolhe_carta()
 
@@ -106,6 +108,8 @@ def JC1(truco, conteudo, tipo_mensagem, resposta):
 
         # Cliente joga a próxima carta
         else:
+            truco.etapa_atual = "JC2"
+
             resposta = "JS2|" + resposta
 
         # Envia para cliente suas cartas
@@ -175,6 +179,8 @@ def JC2(truco, conteudo, tipo_mensagem, resposta):
         # Jogador que ganhou o turno joga novamente
         # Servido joga a próxima carta
         if proximo_jogador == truco.servidor.nome:
+            truco.etapa_atual = "JC1"
+
             # Escolhe carta
             carta = truco.servidor.escolhe_carta()
 
@@ -195,6 +201,8 @@ def JC2(truco, conteudo, tipo_mensagem, resposta):
 
         # Cliente joga a próxima carta
         else:
+            truco.etapa_atual = "JC2"
+
             resposta = "JS2|" + resposta
 
         # Envia para cliente suas cartas

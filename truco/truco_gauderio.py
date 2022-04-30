@@ -1,6 +1,6 @@
 from .baralho import Baralho, dar_as_cartas
 
-MAXIMO_PONTOS = 3
+MAXIMO_PONTOS = 4
 
 
 class Truco(object):
@@ -130,6 +130,8 @@ class Truco(object):
     def proxima_jogada(self, resposta, proximo_jogador):
         # Servidor joga a próxima carta
         if proximo_jogador == self.servidor.nome:
+            self.etapa_atual = "JC1"
+
             # Escolhe carta
             carta = self.servidor.escolhe_carta()
 
@@ -143,6 +145,7 @@ class Truco(object):
 
         # Cliente joga a próxima carta
         else:
+            self.etapa_atual = "JC2"
             resposta = "JS2|" + resposta
 
         # Envia para cliente suas cartas
