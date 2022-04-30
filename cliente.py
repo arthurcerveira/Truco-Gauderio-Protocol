@@ -8,6 +8,14 @@ port = 6050
 print("Digite IJ para inciar o jogo de Truco Gaudério:")
 mensagem = str()
 
+tipos_resposta = {
+    "JS1": "JC1|",
+    "JS2": "JC2|",
+    "TRUCO": "RTRUCO|",
+    "FJ": "",
+    "MD": ""
+}
+
 while True:
     cliente = socket(AF_INET, SOCK_STREAM)
 
@@ -28,53 +36,24 @@ while True:
     dados = cliente.recv(1024)
     resposta = dados.decode('utf-8')
 
-    # print("Servidor: " + resposta + "\n")
-
     # Primeira palavra antes do espaço representa a tipo de mensagem
     tipo_mensagem, conteudo = resposta.split('|')
 
-    # Servidor jogou a primeira carta
-    if tipo_mensagem == "JS1":
+    tipo_resposta = tipos_resposta.get(tipo_mensagem)
+
+    if tipo_resposta is not None:
         print(conteudo)
 
-        # Resposta do cliente inicia com tipo JC1
-        mensagem = "JC1|"
-
-        # Cliente escolhe carta na próxima iteração
-
-    # Cliente jogou a primeira carta
-    elif tipo_mensagem == "JS2":
+        # Resposta do cliente inicia com tipo da mensagem
+        mensagem = tipo_resposta
+    else:
+        # Servidor não deve ter controle sobre o tipo de resposta
+        print("Houve um erro na resposta")
         print(conteudo)
-
-        # Resposta do cliente inicia com tipo JC2
-        mensagem = "JC2|"
-
-        # Cliente escolhe carta na próxima iteração
-
-    # Cliente jogou a primeira carta
-    elif tipo_mensagem == "TRUCO":
-        print(conteudo)
-
-        print("Servidor pediu TRUCO\n1 - Aceitar\n2 - Rejeitar\n")
-
-        # Resposta do cliente inicia com tipo RTRUCO
-        mensagem = "RTRUCO|"
-
-        # Cliente decide se quer TRUCO na próxima iteração
 
     # Fim de jogo
-    elif tipo_mensagem == "FJ":
-        print(conteudo)
-
+    if tipo_mensagem == "FJ":
         # Finaliza execução
         break
-
-    # Mensagem desconhecida
-    elif tipo_mensagem == "MD":
-        print(conteudo)
-
-    else:
-        # print("Tipo de mensagem desconhecido")
-        print(conteudo)
 
     cliente.close()

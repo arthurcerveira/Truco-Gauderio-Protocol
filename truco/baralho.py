@@ -46,6 +46,7 @@ class Carta(object):
 
     def __str__(self):
         representacao = REPRESENTACAO.get(self.numero)
+
         if representacao is None:
             representacao = self.numero
 
@@ -58,8 +59,10 @@ class Carta(object):
         if representacao in MANILHAS:
             return MANILHAS[representacao]
 
+        # Senão, retorna força de acordo com número
         return RANKING[self.numero]
 
+    # Sinal > compara força da carta para facilitar código
     def __gt__(self, outro):
         return self.forca > outro.forca
 

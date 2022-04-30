@@ -57,8 +57,6 @@ class Truco(object):
         cartas_disponiveis = self.servidor.cartas_disponiveis
         cartas_disponiveis += self.cliente.cartas_disponiveis
 
-        # print(f"Cartas disponíveis: {cartas_disponiveis}")
-
         return True if cartas_disponiveis > 0 else False
 
     def maior_carta(self, carta1, carta2, jogador):
@@ -130,7 +128,7 @@ class Truco(object):
         return resposta
 
     def proxima_jogada(self, resposta, proximo_jogador):
-        # Servido joga a próxima carta
+        # Servidor joga a próxima carta
         if proximo_jogador == self.servidor.nome:
             # Escolhe carta
             carta = self.servidor.escolhe_carta()

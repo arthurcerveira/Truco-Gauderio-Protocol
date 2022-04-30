@@ -35,7 +35,6 @@ while True:
         dados = conexao.recv(1024)
 
         if not dados:
-            # print("Not data")
             break
 
         mensagem = dados.decode("utf-8")
@@ -47,11 +46,12 @@ while True:
 
         if funcao_mensagem is not None:
             resposta = funcao_mensagem(
-                truco, conteudo, tipo_mensagem, resposta)
+                truco, conteudo, tipo_mensagem, resposta
+            )
         # Chave não está em mensagens
         else:
             resposta = "MD|Tipo de mensagem desconhecida"
-            print(resposta)
+            print("Tipo de mensagem desconhecida")
             print(conteudo)
 
         conexao.sendall(bytes(resposta, encoding="utf-8"))
